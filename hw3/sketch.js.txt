@@ -1,0 +1,104 @@
+let x = 200;
+let y = 200;
+let blink = 0;
+let armAngle = 0;
+let direction = 1;
+let gifCreated = false;
+
+function setup() {
+  createCanvas(400, 400);
+  frameRate(30);
+}
+
+function draw() {
+  background(220);
+
+  // 눈 흰자 높이 (마우스 근접 시 변화)
+  let eyeWhiteH = 20;
+  if (dist(mouseX, mouseY, x, y) < 80) {
+    eyeWhiteH = 10;
+  }
+
+  // 얼굴
+  fill(255, 224, 189);
+  noStroke();
+  ellipse(x, y, 180, 220);
+
+  // 머리카락
+  fill(50, 30, 20);
+  arc(x, y - 50, 180, 200, PI, TWO_PI);
+
+  // 눈 (흰자)
+  fill(255);
+  ellipse(x - 30, y - 10, 30, eyeWhiteH);
+  ellipse(x + 30, y - 10, 30, eyeWhiteH);
+
+  // 동공
+  fill(0);
+  ellipse(x - 30, y - 10, 10, 10);
+  ellipse(x + 30, y - 10, 10, 10);
+
+  // 안경
+  noFill();
+  stroke(0);
+  strokeWeight(2);
+  ellipse(x - 30, y - 10, 40, 30);
+  ellipse(x + 30, y - 10, 40, 30);
+  line(x - 10, y - 10, x + 10, y - 10);
+
+  // 코
+  stroke(100);
+  line(x, y, x, y + 20);
+
+  // 입 (스페이스바 누르면 크게)
+  noStroke();
+  fill(255, 100, 100);
+  if (keyIsPressed && key === ' ') {
+    arc(x, y + 50, 60, 40, 0, PI);
+  } else {
+    arc(x, y + 50, 60, 20, 0, PI);
+  }
+
+  // 귀
+  fill(255, 224, 189);
+  ellipse(x - 85, y, 20, 30);
+  ellipse(x + 85, y, 20, 30);
+
+  // 팔 (좌우 흔들림)
+  push();
+  translate(x, y + 20);
+  rotate(radians(armAngle));
+  fill(255, 224, 189);
+  rect(-60, 0, 20, 60, 10);
+  rect(40, 0, 20, 60, 10);
+  pop();
+
+  // 팔 각도 애니메이션
+  armAngle += 1 * direction;
+  if (armAngle > 10 || armAngle < -10) {
+    direction *= -1;
+  }
+
+  // 깜빡임
+  if (frameCount % 60 < 5) {
+    blink = 10;
+  } else {
+    blink = 0;
+  }
+
+  fill(255, 224, 189);
+  rect(x - 30, y - 15, 10, blink);
+  rect(x + 25, y - 15, 10, blink);
+
+  // 이동 (키보드 방향키)
+  if (keyIsDown(LEFT_ARROW)) x -= 2;
+  if (keyIsDown(RIGHT_ARROW)) x += 2;
+  if (keyIsDown(UP_ARROW)) y -= 2;
+  if (keyIsDown(DOWN_ARROW)) y += 2;
+
+  // GIF 자동 저장
+  if (frameCount === 300 && !gifCreated) {
+    saveGif('myCharacter.gif', 10);
+    gifCreated = true;
+  }
+}
